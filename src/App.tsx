@@ -4,6 +4,7 @@ import confetti from 'canvas-confetti';
 import { Heart, ChevronRight } from 'lucide-react';
 import { Button } from './components/ui/button';
 import { cn } from './lib/utils';
+import FloatingHearts from './components/FloatingHearts';
 
 type Phase = 'intro' | 'ask' | 'celebrate';
 
@@ -59,7 +60,8 @@ const App = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa] flex items-center justify-center overflow-hidden font-sans">
+    <div className="min-h-screen bg-[#fafafa] flex items-center justify-center overflow-hidden font-sans relative">
+      <FloatingHearts />
       <AnimatePresence mode="wait">
         {phase === 'intro' && (
           <motion.div
