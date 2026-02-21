@@ -11,6 +11,7 @@ const App = () => {
   const [phase, setPhase] = useState<Phase>('intro');
   const [noButtonPos, setNoButtonPos] = useState({ x: 0, y: 0 });
   const [noCount, setNoCount] = useState(0);
+  const [yesScale, setYesScale] = useState(1);
 
   const noTexts = [
     "No",
@@ -42,10 +43,19 @@ const App = () => {
   };
 
   const handleNoHover = () => {
-    const x = Math.random() * (window.innerWidth - 100) - (window.innerWidth / 2 - 50);
-    const y = Math.random() * (window.innerHeight - 100) - (window.innerHeight / 2 - 50);
-    setNoButtonPos({ x, y });
+    // Calculate bounds to keep button on screen
+    // We use a safe margin of 100px from edges
+    const padding = 100;
+    const maxWidth = (window.innerWidth / 2) - padding;
+    const maxHeight = (window.innerHeight / 2) - padding;
+    
+    // Generate random position within safe bounds
+    const newX = (Math.random() * (maxWidth * 2)) - maxWidth;
+    const newY = (Math.random() * (maxHeight * 2)) - maxHeight;
+    
+    setNoButtonPos({ x: newX, y: newY });
     setNoCount(prev => prev + 1);
+    setYesScale(prev => Math.min(prev + 0.1, 2)); // Yes button grows!
   };
 
   return (
@@ -87,7 +97,7 @@ const App = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 1.1 }}
-            className="text-center space-y-12 w-full max-w-2xl px-6 relative"
+            className="text-center space-y-12 w-full max-w-4xl px-6 relative"
           >
             <div className="space-y-4">
               <motion.div
@@ -102,25 +112,28 @@ const App = () => {
               </h1>
             </div>
 
-            <div className="flex flex-col md:flex-row items-center justify-center gap-6 pt-8">
-              <Button
-                onClick={handleYes}
-                size="lg"
-                className="text-xl px-12 py-8 bg-primary hover:bg-primary/90 transition-all duration-300 hover:scale-110 active:scale-95 z-10"
-              >
-                Yes, absolutely! 💖
-              </Button>
+            <div className="flex flex-col md:flex-row items-center justify-center gap-8 pt-8">
+              <motion.div animate={{ scale: yesScale }}>
+                <Button
+                  onClick={handleYes}
+                  size="lg"
+                  className="text-xl px-12 py-8 bg-primary hover:bg-primary/90 shadow-xl hover:shadow-2xl transition-all duration-300 z-50"
+                >
+                  Yes, absolutely! 💖
+                </Button>
+              </motion.div>
 
               <motion.div
                 animate={{ x: noButtonPos.x, y: noButtonPos.y }}
-                transition={{ type: "spring", stiffness: 150, damping: 15 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                className="z-40"
               >
                 <Button
                   variant="outline"
                   size="lg"
                   onMouseEnter={handleNoHover}
                   onClick={handleNoHover}
-                  className="text-lg px-8 py-6 border-slate-200 text-slate-500 hover:bg-slate-50"
+                  className="text-lg px-8 py-6 border-slate-200 text-slate-500 hover:bg-slate-50 select-none"
                 >
                   {noTexts[Math.min(noCount, noTexts.length - 1)]}
                 </Button>
